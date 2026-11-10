@@ -1,0 +1,135 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Біз туралы{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section style="background:var(--dark-2);border-bottom:1px solid var(--gold-border);padding:6rem 0 4rem;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%, rgba(201,168,76,.05) 0%,transparent 65%);"></div>
+  <div class="container position-relative text-center">
+    <div class="section-label justify-content-center mb-3">2020 жылдан бері</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:300;color:var(--white);line-height:1.1;margin-bottom:1.2rem;">
+      Саяхатты <em style="font-style:italic;color:var(--gold);">өнерге</em> айналдырамыз
+    </h1>
+    <p style="color:var(--text-muted);font-size:.95rem;max-width:500px;margin:0 auto;">
+      TravelKZ — Қазақстанның ең кәсіби туристік платформасы. Армандаған саяхатыңызды бізбен жоспарлаңыз.
+    </p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section-pad-sm" style="background:var(--dark);">
+  <div class="container">
+    <div class="row g-0 text-center" style="border:1px solid var(--gold-border);">
+      {% for num, label in stat_items %}
+      <div class="col-6 col-md-3" style="padding:2rem;{% if not forloop.last %}border-right:1px solid var(--gold-border);{% endif %}border-bottom:1px solid var(--gold-border);">
+        <div class="stat-num">{{ num }}</div>
+        <div class="stat-label">{{ label }}</div>
+      </div>
+      {% empty %}
+      <div class="col-6 col-md-3" style="padding:2rem;border-right:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+        <div class="stat-num">500+</div><div class="stat-label">Тур</div>
+      </div>
+      <div class="col-6 col-md-3" style="padding:2rem;border-right:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+        <div class="stat-num">10K+</div><div class="stat-label">Клиент</div>
+      </div>
+      <div class="col-6 col-md-3" style="padding:2rem;border-right:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+        <div class="stat-num">50+</div><div class="stat-label">Ел</div>
+      </div>
+      <div class="col-6 col-md-3" style="padding:2rem;border-bottom:1px solid var(--gold-border);">
+        <div class="stat-num">5 жыл</div><div class="stat-label">Тәжірибе</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="section-pad">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="section-label mb-2">Біздің миссия</div>
+        <h2 class="section-title">Әрбір саяхат — <em>естелік</em></h2>
+        <div class="gold-line"><div class="gold-dot"></div></div>
+        <p style="color:var(--text-muted);line-height:1.85;margin-bottom:1.2rem;">
+          Таулы шыңдардан тропикалық аралдарға дейін — ең эксклюзивті дестинациялар мен 
+          үздік туроператорлармен серіктестік арқылы сіздің саяхатыңызды ерекше ете аламыз.
+        </p>
+        <p style="color:var(--text-muted);line-height:1.85;margin-bottom:2rem;">
+          Тиімді бағада жоғары сапалы қызмет — бұл бізің ұстанымымыз. Клиент қанағаттанарлығы 
+          бізің ең басты мақсатымыз.
+        </p>
+        <a href="{% url 'travel_app:tours' %}" class="btn-gold">
+          <i class="fas fa-map-marked-alt"></i> Турларды қарау
+        </a>
+      </div>
+      <div class="col-lg-6">
+        <div class="row g-3">
+          <div class="col-6">
+            <div style="background:var(--gold-bg);border:1px solid var(--gold-border);padding:2rem;text-align:center;">
+              <i class="fas fa-heart fa-2x" style="color:var(--gold);margin-bottom:.8rem;display:block;"></i>
+              <div style="font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--white);margin-bottom:.3rem;">Клиентке бағыт</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Сіздің қуанышыңыз — бізің мақсатымыз</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:var(--dark-2);border:1px solid var(--dark-5);padding:2rem;text-align:center;">
+              <i class="fas fa-leaf fa-2x" style="color:var(--gold);margin-bottom:.8rem;display:block;"></i>
+              <div style="font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--white);margin-bottom:.3rem;">Экотуризм</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Табиғатты сақтай отырып саяхат</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:var(--dark-2);border:1px solid var(--dark-5);padding:2rem;text-align:center;">
+              <i class="fas fa-handshake fa-2x" style="color:var(--gold);margin-bottom:.8rem;display:block;"></i>
+              <div style="font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--white);margin-bottom:.3rem;">Серіктестік</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Үздік туроператорлармен</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:var(--gold-bg);border:1px solid var(--gold-border);padding:2rem;text-align:center;">
+              <i class="fas fa-gem fa-2x" style="color:var(--gold);margin-bottom:.8rem;display:block;"></i>
+              <div style="font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--white);margin-bottom:.3rem;">Люкс сапа</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Тек үздік сервис</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section-pad" style="background:var(--dark-2);border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-label justify-content-center mb-2">Команда</div>
+      <h2 class="section-title">Кәсіби <em>мамандар</em></h2>
+    </div>
+    <div class="row g-4 justify-content-center">
+      {% for member in team %}
+      <div class="col-md-4 col-lg-3 text-center">
+        <div style="width:72px;height:72px;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto .8rem;font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">
+          {{ member.initial }}
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--white);margin-bottom:2px;">{{ member.name }}</div>
+        <div style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);">{{ member.role }}</div>
+      </div>
+      {% empty %}
+      {% for t in "ABCD" %}
+      <div class="col-md-4 col-lg-3 text-center">
+        <div style="width:72px;height:72px;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto .8rem;font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">{{ t }}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--white);margin-bottom:2px;">
+          {% if forloop.counter == 1 %}Ахмет Бекұлы{% elif forloop.counter == 2 %}Зарина Нұрова{% elif forloop.counter == 3 %}Тимур Алиев{% else %}Айгүл Сейткали{% endif %}
+        </div>
+        <div style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);">
+          {% if forloop.counter == 1 %}Бас директор{% elif forloop.counter == 2 %}Тур менеджері{% elif forloop.counter == 3 %}IT директор{% else %}Клиент қызметі{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

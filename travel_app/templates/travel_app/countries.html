@@ -1,0 +1,53 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Туристік елдер{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="container position-relative">
+    <div class="section-label mb-2"><i class="fas fa-globe me-2"></i>Сыртқы API</div>
+    <h1 class="page-header-title">Туристік <em style="font-style:italic;color:var(--gold);font-family:'Cormorant Garamond',serif;">елдер</em></h1>
+    <p style="font-size:.82rem;color:var(--text-muted);margin-top:.5rem;">RestCountries API арқылы нақты уақыттағы деректер</p>
+  </div>
+</div>
+<div class="container py-5">
+  <!-- REGION FILTER -->
+  <div class="d-flex gap-2 mb-5 flex-wrap">
+    {% for r in regions %}
+    <a href="?region={{ r }}"
+       class="{% if region == r %}btn-gold{% else %}btn-outline-gold{% endif %} btn-sm-gold text-capitalize">
+      {{ r }}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if error_msg %}
+    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>{{ error_msg }}</div>
+  {% elif countries %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div style="font-size:.82rem;color:var(--text-muted);">
+        <span style="color:var(--gold);">{{ countries|length }}</span> ел — 
+        <span style="text-transform:capitalize;">{{ region }}</span> аймағы
+      </div>
+    </div>
+    <div class="row g-3">
+      {% for country in countries %}
+      <div class="col-md-6 col-lg-4">
+        <div class="country-card">
+          {% if country.flag %}
+            <img src="{{ country.flag }}" alt="{{ country.name }} туы" class="country-flag">
+          {% endif %}
+          <div class="country-name">{{ country.name }}</div>
+          <div class="country-row"><i class="fas fa-city"></i><span>{{ country.capital }}</span></div>
+          <div class="country-row"><i class="fas fa-users"></i><span>{{ country.population }}</span></div>
+          <div class="country-row"><i class="fas fa-expand-alt"></i><span>{{ country.area }}</span></div>
+          {% if country.languages %}
+          <div class="country-row"><i class="fas fa-language"></i><span>{{ country.languages }}</span></div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Деректер табылмады.</div>
+  {% endif %}
+</div>
+{% endblock %}

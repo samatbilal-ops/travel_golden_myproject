@@ -1,0 +1,220 @@
+{% extends 'travel_app/base.html' %}
+{% load static %}
+{% block title %}{{ tour.title }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="container position-relative">
+    <nav aria-label="breadcrumb" class="mb-2">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'travel_app:index' %}">Басты</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'travel_app:tours' %}">Турлар</a></li>
+        <li class="breadcrumb-item active">{{ tour.title }}</li>
+      </ol>
+    </nav>
+    <h1 class="page-header-title">{{ tour.title }}</h1>
+    <div style="margin-top:.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <span style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);">{{ tour.category.name }}</span>
+      {% if avg_rating %}
+      <span style="font-size:.78rem;color:var(--text-muted);">
+        {% for i in "12345" %}{% if forloop.counter <= avg_rating %}<i class="fas fa-star star-filled"></i>{% else %}<i class="fas fa-star star-empty"></i>{% endif %}{% endfor %}
+        {{ avg_rating }} · {{ reviews.count }} пікір
+      </span>
+      {% endif %}
+      {% if meta %}<span class="weather-chip"><i class="fas fa-eye me-1"></i>{{ meta.views_count }} қаралым</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- LEFT -->
+    <div class="col-lg-7">
+      {% if tour.image %}
+        <img src="{{ tour.image.url }}" class="detail-img mb-4" alt="{{ tour.title }}">
+      {% else %}
+        <div class="detail-img mb-4 d-flex align-items-center justify-content-center" style="background:var(--dark-3);height:360px;border:1px solid var(--dark-5);">
+          <i class="fas fa-image fa-4x" style="color:var(--dark-5);"></i>
+        </div>
+      {% endif %}
+
+      {% if user.is_staff %}
+      <div class="d-flex gap-2 mb-4">
+        <a href="{% url 'travel_app:update_tour' tour.slug %}" class="btn-outline-gold btn-sm-gold">
+          <i class="fas fa-edit"></i> Өңдеу
+        </a>
+        <a href="{% url 'travel_app:delete_tour' tour.slug %}" class="btn-ghost btn-sm-gold" style="border-color:rgba(192,57,43,.3);color:#e07070;">
+          <i class="fas fa-trash"></i> Жою
+        </a>
+      </div>
+      {% endif %}
+
+      <div class="section-label mb-2">Тур туралы</div>
+      <div class="gold-line-simple mb-3"></div>
+      <div style="color:var(--text-main);line-height:1.85;font-size:.95rem;">{{ tour.description|linebreaks }}</div>
+
+      <!-- TOUR META -->
+      {% if meta %}
+      <div class="mt-4">
+        <div class="section-label mb-3">Қосымша ақпарат</div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="info-chip">
+            <i class="fas fa-tachometer-alt"></i>
+            {% if meta.difficulty == 'easy' %}Оңай{% elif meta.difficulty == 'medium' %}Орта{% else %}Қиын{% endif %}
+          </span>
+          <span class="info-chip"><i class="fas fa-users"></i> Макс. {{ meta.max_capacity }} адам</span>
+          <span class="info-chip"><i class="fas fa-language"></i> {{ meta.language }}</span>
+          <span class="info-chip"><i class="fas fa-child"></i> {{ meta.min_age }}+ жас</span>
+        </div>
+        {% if meta.includes %}
+        <div class="p-3 mb-2" style="background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.25);">
+          <div style="font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6fcf97;margin-bottom:.4rem;">
+            <i class="fas fa-check-circle me-2"></i>Бағасына кіреді
+          </div>
+          <div style="font-size:.85rem;color:#6fcf97;">{{ meta.includes }}</div>
+        </div>
+        {% endif %}
+        {% if meta.excludes %}
+        <div class="p-3" style="background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.25);">
+          <div style="font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#e07070;margin-bottom:.4rem;">
+            <i class="fas fa-times-circle me-2"></i>Кірмейді
+          </div>
+          <div style="font-size:.85rem;color:#e07070;">{{ meta.excludes }}</div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT: BOOKING PANEL -->
+    <div class="col-lg-5">
+      <div style="position:sticky;top:90px;">
+        <div style="background:var(--dark-2);border:1px solid var(--gold-border);padding:2rem;position:relative;">
+          <div style="position:absolute;top:8px;right:8px;bottom:8px;left:8px;border:1px solid rgba(201,168,76,.07);pointer-events:none;"></div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:600;color:var(--gold);line-height:1;">
+            ₸{{ tour.price|floatformat:0 }}
+          </div>
+          <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.5rem;">адамнан бастап</div>
+
+          <div style="border-top:1px solid var(--dark-5);padding-top:1.2rem;margin-bottom:1.5rem;">
+            {% for label, val in detail_rows %}
+            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem;">
+              <span style="color:var(--text-muted);">{{ label }}</span>
+              <span style="color:var(--text-main);">{{ val }}</span>
+            </div>
+            {% endfor %}
+            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem;">
+              <span style="color:var(--text-muted);">Ұзақтығы</span>
+              <span style="color:var(--text-main);">{{ tour.duration }} күн</span>
+            </div>
+            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem;">
+              <span style="color:var(--text-muted);">Санат</span>
+              <span style="color:var(--gold);">{{ tour.category.name }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem;">
+              <span style="color:var(--text-muted);">Автор</span>
+              <span style="color:var(--text-main);">{{ tour.author.username }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2" style="font-size:.84rem;">
+              <span style="color:var(--text-muted);">Қосылды</span>
+              <span style="color:var(--text-main);">{{ tour.created_at|date:"d.m.Y" }}</span>
+            </div>
+          </div>
+
+          {% if user.is_authenticated %}
+            <div class="d-flex gap-2 mb-3">
+              <a href="{% url 'travel_app:book_tour' tour.slug %}" class="btn-gold justify-content-center" style="flex:1;">
+                <i class="fas fa-calendar-check"></i> Брондау
+              </a>
+              <div class="wishlist-btn" data-slug="{{ tour.slug }}" id="detailWishlist" onclick="wlToggle(this)"
+                   style="width:48px;height:48px;flex-shrink:0;cursor:pointer;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;background:var(--dark-3);transition:.3s;"
+                   title="Таңдаулыларға қосу">
+                <i class="fas fa-heart" style="color:var(--text-muted);"></i>
+              </div>
+            </div>
+          {% else %}
+            <div class="alert alert-info mb-3">
+              Брондау үшін <a href="{% url 'travel_app:login' %}" style="color:var(--gold);">кіру</a> керек.
+            </div>
+          {% endif %}
+          <a href="{% url 'travel_app:contact' %}" class="btn-outline-gold w-100 justify-content-center">
+            <i class="fas fa-phone"></i> Байланысу
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="mt-5 pt-3" style="border-top:1px solid var(--dark-5);">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="section-label mb-2">Пікірлер <span style="color:var(--text-muted);font-size:.78rem;">({{ reviews.count }})</span></div>
+        <div class="gold-line-simple mb-4"></div>
+        {% for review in reviews %}
+        <div class="review-card">
+          <div class="d-flex justify-content-between mb-2">
+            <div class="review-author">{{ review.user.username }}</div>
+            <div>{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="fas fa-star star-filled"></i>{% else %}<i class="fas fa-star star-empty"></i>{% endif %}{% endfor %}</div>
+          </div>
+          <div class="review-date mb-2">{{ review.created_at|date:"d.m.Y H:i" }}</div>
+          <div style="font-size:.9rem;color:var(--text-main);">{{ review.comment }}</div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Пікір жоқ. Бірінші болыңыз!</div>
+        {% endfor %}
+      </div>
+      <div class="col-lg-5">
+        {% if user.is_authenticated %}
+        <div style="background:var(--dark-2);border:1px solid var(--dark-5);padding:1.8rem;">
+          <div class="section-label mb-3">Пікір қалдыру</div>
+          <form method="post">
+            {% csrf_token %}
+            {% for field in review_form %}
+            <div class="mb-3">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% for err in field.errors %}<div style="color:#e07070;font-size:.78rem;margin-top:4px;">{{ err }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-gold w-100 justify-content-center">
+              <i class="fas fa-paper-plane"></i> Жіберу
+            </button>
+          </form>
+        </div>
+        {% else %}
+        <div class="alert alert-info">Пікір қалдыру үшін <a href="{% url 'travel_app:login' %}" style="color:var(--gold);">кіру</a> керек.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATED -->
+  {% if related_tours %}
+  <div class="mt-5 pt-3" style="border-top:1px solid var(--dark-5);">
+    <div class="section-label mb-2">Ұқсас турлар</div>
+    <div class="gold-line-simple mb-4"></div>
+    <div class="row g-4">
+      {% for r in related_tours %}
+      <div class="col-md-4">
+        <div class="tour-card">
+          <div class="tour-card-img-wrap">
+            {% if r.image %}<img src="{{ r.image.url }}" class="tour-card-img" alt="{{ r.title }}">
+            {% else %}<div class="tour-img-placeholder"><i class="fas fa-image"></i></div>{% endif %}
+          </div>
+          <div class="tour-card-body">
+            <div class="tour-cat">{{ r.category.name }}</div>
+            <div class="tour-name">{{ r.title }}</div>
+          </div>
+          <div class="tour-card-footer">
+            <div class="tour-price">₸{{ r.price|floatformat:0 }}</div>
+            <a href="{% url 'travel_app:tour_detail' r.slug %}" class="btn-outline-gold btn-sm-gold">Қарау</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

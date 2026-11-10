@@ -1,0 +1,156 @@
+{% extends 'travel_app/base.html' %}
+{% load static %}
+{% block title %}Турлар{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="container position-relative">
+    <div class="section-label mb-2">Барлық турлар</div>
+    <h1 class="page-header-title">Бағыт <em style="font-style:italic;color:var(--gold);font-family:'Cormorant Garamond',serif;">таңдаңыз</em></h1>
+    <nav aria-label="breadcrumb" class="mt-2">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'travel_app:index' %}">Басты</a></li>
+        <li class="breadcrumb-item active">Турлар</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- SEARCH PANEL -->
+  <div class="search-panel">
+    <form method="get" class="d-flex gap-3 align-items-end flex-wrap w-100">
+      <div style="flex:2;min-width:200px;">
+        <label class="form-label">Іздеу</label>
+        <input type="text" name="q" class="form-control" placeholder="Тур атауы..." value="{{ search_query }}">
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <label class="form-label">Санат</label>
+        <select name="category" class="form-select">
+          <option value="">Барлығы</option>
+          {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <label class="form-label">Сұрыптау</label>
+        <select name="sort" class="form-select">
+          {% for key, label in sort_options.items %}
+            <option value="{{ key }}" {% if sort_by == key %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="btn-gold" style="height:44px;padding:.55rem 1.8rem;">
+          <i class="fas fa-search"></i> Іздеу
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESULTS ROW -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div style="font-size:.82rem;color:var(--text-muted);letter-spacing:.06em;">
+      {% if search_query %}«{{ search_query }}» — {% endif %}
+      <span style="color:var(--gold);">{{ page_obj.paginator.count }}</span> тур табылды
+    </div>
+    {% if user.is_staff %}
+    <a href="{% url 'travel_app:add_tour' %}" class="btn-outline-gold btn-sm-gold">
+      <i class="fas fa-plus"></i> Тур қосу
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4">
+    {% for tour in page_obj %}
+    <div class="col-md-6 col-lg-4">
+      <div class="tour-card h-100">
+        <div class="tour-card-img-wrap">
+          {% if tour.image %}
+            <img src="{{ tour.image.url }}" class="tour-card-img" alt="{{ tour.title }}">
+          {% else %}
+            <div class="tour-img-placeholder"><i class="fas fa-image"></i></div>
+          {% endif %}
+          <span class="tour-badge">{{ tour.category.name }}</span>
+          <div class="wishlist-btn" data-slug="{{ tour.slug }}" onclick="wlToggle(this)" title="Таңдаулыларға қосу" style="z-index:10;cursor:pointer;"><i class="fas fa-heart"></i></div>
+        </div>
+        <div class="tour-card-body">
+          <div class="tour-cat">{{ tour.category.name }}</div>
+          <div class="tour-name">{{ tour.title }}</div>
+          <p class="tour-desc">{{ tour.description|truncatewords:15 }}</p>
+          <div class="tour-meta">
+            <span><i class="fas fa-clock"></i> {{ tour.duration }} күн</span>
+            <span><i class="fas fa-user"></i> {{ tour.author.username }}</span>
+          </div>
+        </div>
+        <div class="tour-card-footer">
+          <div>
+            <div class="tour-price">₸{{ tour.price|floatformat:0 }}</div>
+            <div class="tour-price-per">/ адамнан</div>
+          </div>
+          <a href="{% url 'travel_app:tour_detail' tour.slug %}" class="btn-gold btn-sm-gold">
+            Қарау <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5" style="color:var(--text-muted);">
+      <i class="fas fa-search fa-3x mb-3 d-block" style="opacity:.2;"></i>
+      <h5>Тур табылмады</h5>
+      <a href="{% url 'travel_app:tours' %}" class="btn-outline-gold mt-3">Барлық турлар</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- PAGINATION -->
+  {% if page_obj.has_other_pages %}
+  <div class="d-flex justify-content-center align-items-center gap-3 mt-5 flex-wrap">
+    <nav>
+      <ul class="pagination mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1{% if querystring %}&{{ querystring }}{% endif %}">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+              <i class="fas fa-angle-left"></i>
+            </a>
+          </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+              <i class="fas fa-angle-right"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <span style="font-size:.78rem;color:var(--text-muted);letter-spacing:.1em;">
+      {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </span>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

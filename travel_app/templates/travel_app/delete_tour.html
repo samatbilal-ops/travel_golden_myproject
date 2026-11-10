@@ -1,0 +1,29 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Тур жою{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div style="background:var(--dark-2);border:1px solid rgba(192,57,43,.4);padding:2.5rem;text-align:center;position:relative;">
+        <div style="width:64px;height:64px;border:1px solid rgba(192,57,43,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.4rem;color:#e07070;">
+          <i class="fas fa-trash"></i>
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--white);margin-bottom:.5rem;">Турды жою</div>
+        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.8rem;">
+          «<span style="color:var(--white);">{{ tour.title }}</span>» туры жойылсын ба?<br>
+          Бұл әрекетті қайтару мүмкін емес.
+        </p>
+        <div class="d-flex gap-3 justify-content-center">
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-gold" style="background:var(--danger);border-color:var(--danger);">
+              <i class="fas fa-trash"></i> Иә, жою
+            </button>
+          </form>
+          <a href="{% url 'travel_app:tour_detail' tour.slug %}" class="btn-ghost">Бас тарту</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

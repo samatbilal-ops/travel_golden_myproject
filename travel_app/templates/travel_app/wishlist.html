@@ -1,0 +1,50 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Таңдаулылар{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="container position-relative">
+    <div class="section-label mb-2"><i class="fas fa-heart me-2"></i>Сақталған турлар</div>
+    <h1 class="page-header-title">Таңдаулылар</h1>
+  </div>
+</div>
+<div class="container py-5">
+  <div class="row g-4">
+    {% for tour in wishlist_tours %}
+    <div class="col-md-6 col-lg-4">
+      <div class="tour-card h-100">
+        <div class="tour-card-img-wrap">
+          {% if tour.image %}<img src="{{ tour.image.url }}" class="tour-card-img" alt="{{ tour.title }}">
+          {% else %}<div class="tour-img-placeholder"><i class="fas fa-image"></i></div>{% endif %}
+          <span class="tour-badge">{{ tour.category.name }}</span>
+          <div class="wishlist-btn active" data-slug="{{ tour.slug }}" data-remove-on-off onclick="wlToggle(this)" title="Таңдаулылардан алу" style="background:var(--gold);border-color:var(--gold);cursor:pointer;z-index:10;"><i class="fas fa-heart" style="color:var(--dark);"></i></div>
+        </div>
+        <div class="tour-card-body">
+          <div class="tour-cat">{{ tour.category.name }}</div>
+          <div class="tour-name">{{ tour.title }}</div>
+          <p class="tour-desc">{{ tour.description|truncatewords:14 }}</p>
+          <div class="tour-meta">
+            <span><i class="fas fa-clock"></i> {{ tour.duration }} күн</span>
+          </div>
+        </div>
+        <div class="tour-card-footer">
+          <div>
+            <div class="tour-price">₸{{ tour.price|floatformat:0 }}</div>
+            <div class="tour-price-per">/ адамнан</div>
+          </div>
+          <a href="{% url 'travel_app:tour_detail' tour.slug %}" class="btn-gold btn-sm-gold">
+            Қарау <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <i class="fas fa-heart fa-3x mb-3 d-block" style="opacity:.15;color:var(--gold);"></i>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--white);margin-bottom:.5rem;">Таңдаулылар бос</div>
+      <div style="color:var(--text-muted);margin-bottom:1.5rem;">Ұнаған турларды ♥ басу арқылы осында сақтаңыз.</div>
+      <a href="{% url 'travel_app:tours' %}" class="btn-gold"><i class="fas fa-map-marked-alt"></i> Турларды қарау</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="container position-relative">
+    <h1 class="page-header-title">Профиль</h1>
+  </div>
+</div>
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div style="background:var(--dark-2);border:1px solid var(--gold-border);padding:2rem;text-align:center;position:relative;">
+        <div style="position:absolute;top:8px;right:8px;bottom:8px;left:8px;border:1px solid rgba(201,168,76,.06);pointer-events:none;"></div>
+        <div class="profile-av">{{ user.username.0|upper }}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--white);margin-bottom:4px;">
+          {{ user.get_full_name|default:user.username }}
+        </div>
+        <div style="font-size:.78rem;letter-spacing:.1em;color:var(--text-muted);margin-bottom:4px;">@{{ user.username }}</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">{{ user.email }}</div>
+        <div style="border-top:1px solid var(--dark-5);margin:1.5rem 0;"></div>
+        <div class="d-flex flex-column gap-2">
+          <a href="{% url 'travel_app:tours' %}" class="btn-outline-gold btn-sm-gold justify-content-center w-100">
+            <i class="fas fa-map-marked-alt"></i> Турлар
+          </a>
+          {% if user.is_staff %}
+          <a href="{% url 'travel_app:add_tour' %}" class="btn-ghost btn-sm-gold justify-content-center w-100">
+            <i class="fas fa-plus"></i> Тур қосу
+          </a>
+          {% endif %}
+          <a href="{% url 'travel_app:wishlist' %}" class="btn-ghost btn-sm-gold justify-content-center w-100">
+            <i class="fas fa-heart"></i> Таңдаулылар
+          </a>
+        </div>
+        <div style="border-top:1px solid var(--dark-5);margin-top:1.5rem;padding-top:1.2rem;">
+          <div class="d-flex justify-content-between" style="font-size:.8rem;margin-bottom:.4rem;">
+            <span style="color:var(--text-muted);">Брондаулар:</span>
+            <span style="color:var(--gold);font-weight:600;">{{ page_obj.paginator.count }}</span>
+          </div>
+          <div class="d-flex justify-content-between" style="font-size:.8rem;">
+            <span style="color:var(--text-muted);">Мүше болды:</span>
+            <span style="color:var(--text-main);">{{ user.date_joined|date:"d.m.Y" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <div class="section-label mb-0">Менің брондауларым</div>
+        </div>
+        <span style="background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);font-size:.72rem;font-weight:600;letter-spacing:.14em;padding:4px 12px;">
+          {{ page_obj.paginator.count }}
+        </span>
+      </div>
+      <div class="gold-line-simple mb-4"></div>
+
+      {% for booking in page_obj %}
+      <div class="booking-item">
+        {% if booking.tour.image %}
+          <img src="{{ booking.tour.image.url }}" class="booking-thumb" alt="{{ booking.tour.title }}">
+        {% else %}
+          <div class="booking-thumb-placeholder"><i class="fas fa-map-marked-alt" style="color:var(--dark-5);"></i></div>
+        {% endif %}
+        <div style="flex:1;">
+          <div class="booking-name">{{ booking.tour.title }}</div>
+          <div class="booking-meta-row">
+            <span><i class="fas fa-calendar me-1" style="color:var(--gold);font-size:.7rem;"></i>{{ booking.start_date }}</span>
+            <span><i class="fas fa-users me-1" style="color:var(--gold);font-size:.7rem;"></i>{{ booking.num_people }} адам</span>
+            <span><i class="fas fa-tag me-1" style="color:var(--gold);font-size:.7rem;"></i>₸{{ booking.total_price|floatformat:0 }}</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">{{ booking.booking_date|date:"d.m.Y" }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center py-5" style="color:var(--text-muted);">
+        <i class="fas fa-suitcase-rolling fa-3x mb-3 d-block" style="opacity:.15;"></i>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:.5rem;color:var(--white);">Брондаулар жоқ</div>
+        <div style="font-size:.85rem;">Алғашқы туріңізді брондаңыз!</div>
+        <a href="{% url 'travel_app:tours' %}" class="btn-gold mt-3"><i class="fas fa-map-marked-alt"></i> Турларды қарау</a>
+      </div>
+      {% endfor %}
+
+      {% if page_obj.has_other_pages %}
+      <div class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+          {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-angle-left"></i></a></li>{% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="fas fa-angle-right"></i></a></li>{% endif %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

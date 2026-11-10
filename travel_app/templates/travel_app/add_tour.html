@@ -1,0 +1,38 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}{% if is_edit %}Тур өңдеу{% else %}Тур қосу{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="container position-relative">
+    <h1 class="page-header-title">
+      {% if is_edit %}<i class="fas fa-edit me-2" style="color:var(--gold);font-size:1.5rem;"></i>Тур өңдеу
+      {% else %}<i class="fas fa-plus me-2" style="color:var(--gold);font-size:1.5rem;"></i>Жаңа тур қосу{% endif %}
+    </h1>
+  </div>
+</div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div style="background:var(--dark-2);border:1px solid var(--gold-border);padding:2.5rem;position:relative;">
+        <div style="position:absolute;top:8px;right:8px;bottom:8px;left:8px;border:1px solid rgba(201,168,76,.06);pointer-events:none;"></div>
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-4">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">{{ field.help_text }}</div>{% endif %}
+            {% for error in field.errors %}<div style="color:#e07070;font-size:.78rem;margin-top:4px;"><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>{% endfor %}
+          </div>
+          {% endfor %}
+          <div class="d-flex gap-3 mt-2">
+            <button type="submit" class="btn-gold flex-fill justify-content-center">
+              <i class="fas fa-save"></i> {% if is_edit %}Сақтау{% else %}Тур қосу{% endif %}
+            </button>
+            <a href="{% url 'travel_app:tours' %}" class="btn-ghost" style="padding:.85rem 1.8rem;">Бас тарту</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

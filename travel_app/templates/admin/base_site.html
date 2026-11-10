@@ -1,0 +1,107 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'travel_app/images/logo.png' %}" alt="Логотип" height="40px" style="margin-right: 10px;">
+        Туристік сайт админ панелі
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #0d6efd;
+        --secondary: #6c757d;
+        --accent: #0dcaf0;
+        --header-bg: #212529;
+    }
+    
+    #header {
+        background: var(--header-bg);
+        color: white;
+    }
+    
+    #branding h1 a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    #branding h1 a:hover {
+        color: var(--accent);
+    }
+    
+    .module h2, .module caption {
+        background: var(--primary);
+    }
+    
+    div.breadcrumbs {
+        background: var(--secondary);
+    }
+    
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: var(--primary);
+    }
+    
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: #0b5ed7;
+    }
+    
+    .button.default, input[type=submit].default, .submit-row input.default {
+        background: #198754;
+    }
+    
+    .button.default:hover, input[type=submit].default:hover {
+        background: #157347;
+    }
+</style>
+{% endblock %}
+
+{% block welcome-msg %}
+    Қош келдіңіз, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+{% endblock %}
+
+{% block userlinks %}
+    {% if user.is_active and user.is_staff %}
+        <a href="{% url 'admin:logout' %}">Шығу</a>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+<div style="text-align: center; padding: 20px; color: #6c757d;">
+    <p>Туристік сайт &copy; {% now "Y" %}. Барлық құқықтар қорғалған.</p>
+</div>
+{% endblock %}
+{% if user.is_authenticated %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+        <i class="fas fa-user"></i> {{ user.username }}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="{% url 'travel_app:profile' %}">Профиль</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <form method="post" action="{% url 'travel_app:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item">Шығу</button>
+            </form>
+        </li>
+    </ul>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'travel_app:login' %}">Кіру</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'travel_app:register' %}">Тіркелу</a>
+</li>
+{% endif %}

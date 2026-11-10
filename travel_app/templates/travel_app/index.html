@@ -1,0 +1,259 @@
+{% extends 'travel_app/base.html' %}
+{% load static %}
+{% block title %}Басты бет{% endblock %}
+{% block content %}
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container position-relative py-5">
+    <div class="row align-items-center" style="min-height:80vh;">
+      <div class="col-lg-6">
+
+        <div class="hero-eyebrow">
+          <span></span> Қазақстандағы №1 саяхат платформасы
+        </div>
+
+        <h1 class="hero-title">
+          Дүниені<br>
+          <strong>алтынмен</strong>
+          <em>ашыңыз</em>
+        </h1>
+
+        <p class="hero-desc">
+          Тауы биік Шымбұлақтан бастап, мұхит жиегіндегі Мальдивке дейін —
+          ең сирек дестинациялар сізді күтеді.
+        </p>
+
+        <form class="hero-search-box" action="{% url 'travel_app:tours' %}" method="get">
+          <i class="fas fa-search ms-3" style="color:var(--text-muted);font-size:.8rem;"></i>
+          <input type="text" name="q" placeholder="Мысалы: Мальдив, Париж, Шымбұлақ...">
+          <button type="submit">Іздеу &nbsp;<i class="fas fa-arrow-right"></i></button>
+        </form>
+
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">{{ total_tours }}+</div>
+            <div class="stat-label">Тур</div>
+          </div>
+          <div>
+            <div class="stat-num">{{ total_bookings }}+</div>
+            <div class="stat-label">Брондау</div>
+          </div>
+          <div>
+            <div class="stat-num">50+</div>
+            <div class="stat-label">Ел</div>
+          </div>
+          <div>
+            <div class="stat-num">5★</div>
+            <div class="stat-label">Рейтинг</div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="{% url 'travel_app:tours' %}" class="btn-gold">
+            <i class="fas fa-map-marked-alt"></i> Турларды қарау
+          </a>
+          {% if not user.is_authenticated %}
+          <a href="{% url 'travel_app:register' %}" class="btn-outline-gold">
+            <i class="fas fa-user-plus"></i> Тегін тіркелу
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <div class="col-lg-5 offset-lg-1 d-none d-lg-flex flex-column gap-3 py-5">
+        {% for tour in tours|slice:":2" %}
+        <a href="{% url 'travel_app:tour_detail' tour.slug %}" class="hero-visual-card" style="text-decoration:none;">
+          <div class="hvc-label">{{ tour.category.name }}</div>
+          <div class="hvc-dest">{{ tour.title }}</div>
+          <div class="hvc-price"><sup>₸</sup>{{ tour.price|floatformat:0 }}</div>
+        </a>
+        {% empty %}
+        <div class="hero-visual-card">
+          <div class="hvc-label">Таулы тур</div>
+          <div class="hvc-dest">Шымбұлақ, Алматы</div>
+          <div class="hvc-price"><sup>₸</sup>45,000</div>
+        </div>
+        <div class="hero-visual-card">
+          <div class="hvc-label">Жағажай туры</div>
+          <div class="hvc-dest">Мальдив аралдары</div>
+          <div class="hvc-price"><sup>₸</sup>350,000</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Төмен жылжу</span>
+  </div>
+</section>
+
+<!-- ═══ CATEGORIES ════════════════════════════════════════════ -->
+<section class="section-pad" style="background:var(--dark-2);">
+  <div class="container">
+    <div class="row align-items-end mb-5">
+      <div class="col-md-7">
+        <div class="section-label">Барлық санаттар</div>
+        <h2 class="section-title">Саяхат <em>стиліңізді</em><br>таңдаңыз</h2>
+      </div>
+      <div class="col-md-5 text-md-end">
+        <a href="{% url 'travel_app:tours' %}" class="btn-outline-gold">
+          Барлық турлар <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+    {% if categories %}
+    <div class="row g-3">
+      {% for category in categories %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'travel_app:tours' %}?category={{ category.slug }}" class="cat-card">
+          <div class="cat-icon-wrap">
+            <i class="fas {{ category.icon|default:'fa-globe' }}"></i>
+          </div>
+          <div class="cat-name">{{ category.name }}</div>
+          <div class="cat-count">{{ category.tours.count }} тур</div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4" style="color:var(--text-muted);">
+      Санаттар admin панелінде қосылады
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ═══ FEATURED TOURS ════════════════════════════════════════ -->
+<section class="section-pad">
+  <div class="container">
+    <div class="row align-items-end mb-5">
+      <div class="col-md-7">
+        <div class="section-label">Ерекше таңдау</div>
+        <h2 class="section-title">Ұсынылған <em>турлар</em></h2>
+        <div class="gold-line"><div class="gold-dot"></div></div>
+      </div>
+      <div class="col-md-5 text-md-end">
+        <a href="{% url 'travel_app:tours' %}" class="btn-outline-gold btn-sm-gold">
+          Барлығын көру <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      {% for tour in tours %}
+      <div class="col-md-6 col-lg-4">
+        <div class="tour-card h-100">
+          <div class="tour-card-img-wrap">
+            {% if tour.image %}
+              <img src="{{ tour.image.url }}" class="tour-card-img" alt="{{ tour.title }}">
+            {% else %}
+              <div class="tour-img-placeholder"><i class="fas fa-image"></i></div>
+            {% endif %}
+            {% if tour.is_featured %}
+              <span class="tour-badge tour-badge-featured"><i class="fas fa-star me-1"></i>Ерекше</span>
+            {% else %}
+              <span class="tour-badge">{{ tour.category.name }}</span>
+            {% endif %}
+            <div class="wishlist-btn" data-slug="{{ tour.slug }}" onclick="wlToggle(this)" title="Таңдаулыларға қосу" style="z-index:10;cursor:pointer;"><i class="fas fa-heart"></i></div>
+          </div>
+          <div class="tour-card-body">
+            <div class="tour-cat">{{ tour.category.name }}</div>
+            <div class="tour-name">{{ tour.title }}</div>
+            <p class="tour-desc">{{ tour.description|truncatewords:16 }}</p>
+            <div class="tour-meta">
+              <span><i class="fas fa-clock"></i> {{ tour.duration }} күн</span>
+              <span><i class="fas fa-user"></i> {{ tour.author.username }}</span>
+              {% if tour.average_rating %}
+              <span><i class="fas fa-star"></i> {{ tour.average_rating }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="tour-card-footer">
+            <div>
+              <div class="tour-price">₸{{ tour.price|floatformat:0 }}</div>
+              <div class="tour-price-per">адамнан бастап</div>
+            </div>
+            <a href="{% url 'travel_app:tour_detail' tour.slug %}" class="btn-gold btn-sm-gold">
+              Қарау <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center py-5" style="color:var(--text-muted);">
+        <i class="fas fa-map-marked-alt fa-3x d-block mb-3" style="opacity:.15;"></i>
+        <p>Турлар әлі қосылмаған.</p>
+        {% if user.is_staff %}<a href="{% url 'travel_app:add_tour' %}" class="btn-gold mt-2">Тур қосу</a>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY US ════════════════════════════════════════════════ -->
+<section class="section-pad" style="background:var(--dark-2);border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-label" style="justify-content:center;">Артықшылықтарымыз</div>
+      <h2 class="section-title">Неге <em>бізді</em> таңдайды?</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fas fa-shield-alt"></i></div>
+          <div class="feature-title">Сенімділік</div>
+          <p class="feature-desc">Тексерілген туроператорлармен жұмыс. Барлық брондаулар сақтандырылған.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fas fa-gem"></i></div>
+          <div class="feature-title">Люкс сапасы</div>
+          <p class="feature-desc">Тек үздік мейманханалар мен қызметтер. Премиум тәжірибе кепілденген.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fas fa-headset"></i></div>
+          <div class="feature-title">Қолдау 24/7</div>
+          <p class="feature-desc">Саяхат кезінде кез келген уақытта біздің команда сізге дайын.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fas fa-tags"></i></div>
+          <div class="feature-title">Үздік бағалар</div>
+          <p class="feature-desc">Жасырын комиссия жоқ. Нарықтағы ең қолайлы бағалар кепілденеді.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="container text-center position-relative">
+    <div class="section-label justify-content-center mb-3">Бүгін бастаңыз</div>
+    <h2 class="section-title mb-3">Армандаған саяхатыңыз<br><em>бір шерту жерде</em></h2>
+    <p style="color:var(--text-muted);font-size:.92rem;max-width:440px;margin:0 auto 2rem;line-height:1.75;">
+      Тіркеліп, ең жақсы турларды брондаңыз. Эксклюзивті ұсыныстарды алыңыз.
+    </p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'travel_app:tours' %}" class="btn-gold">
+        <i class="fas fa-map-marked-alt"></i> Турларды қарау
+      </a>
+      {% if not user.is_authenticated %}
+      <a href="{% url 'travel_app:register' %}" class="btn-outline-gold">
+        <i class="fas fa-user-plus"></i> Тегін тіркелу
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
